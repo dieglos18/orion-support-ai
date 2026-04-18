@@ -1,19 +1,28 @@
 """
-AWS Lambda handler for the Orion AI Support Orchestrator.
+AWS Lambda handler for the AI Support Orchestrator.
 Entry point for SQS-triggered ticket processing.
 """
 import json
 import logging
+import os
 from typing import Dict, Any
+from src.agents.workflow import process_ticket
 
 # Configure logging
+log_level = os.getenv('LOG_LEVEL', 'INFO')
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(log_level)
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Lambda handler function.
+    
+    Flow:
+    1. Parse SQS message
+    2. Run ticket through LangGraph workflow
+    3. Emit EventBridge event if critical
+    4. Return result
     
     Args:
         event: SQS event with ticket data
@@ -22,9 +31,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Returns:
         Response with processing status
     """
-    logger.info(f"Received event: {json.dumps(event)}")
+    logger.info(f"Received {len(event.get('Records', []))} SQS messages")
     
-    # Extract SQS records
     records = event.get('Records', [])
     
     if not records:
@@ -34,28 +42,63 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({'error': 'No records to process'})
         }
     
-    processed_count = 0
+    processed_results = []
     
     for record in records:
         try:
             # Parse message body
             message_body = json.loads(record['body'])
-            logger.info(f"Processing ticket: {message_body}")
+            logger.info(f"Processing ticket: {message_body.get('ticket_id')}")
             
-            # TODO: Phase 3 - Process with LangGraph
-            # result = process_ticket_with_langgraph(message_body)
+            # Run through LangGraph workflow
+            result = process_ticket(message_body)
             
-            processed_count += 1
+            # Check if processing succeeded
+            if 'error' in result:
+                logger.error(f"Workflow error: {result['error']}")
+                processed_results.append({
+                    'ticket_id': message_body.get('ticket_id'),
+                    'status': 'failed',
+                    'error': result['error']
+                })
+                continue
+            
+            # Extract final analysis
+            analysis = result.get('final_analysis', {})
+            
+            # Log result
+            logger.info(
+                f"Ticket {message_body.get('ticket_id')} processed: "
+                f"{analysis.get('category')} (urgency {analysis.get('urgency')})"
+            )
+            
+            # TODO: Phase 4 - Emit EventBridge event if critical
+            # if analysis.get('urgency', 0) >= 4:
+            #     emit_critical_alert(analysis)
+            
+            processed_results.append({
+                'ticket_id': message_body.get('ticket_id'),
+                'status': 'success',
+                'analysis': analysis,
+                'cost': result.get('total_cost', 0)
+            })
             
         except Exception as e:
             logger.error(f"Error processing record: {str(e)}", exc_info=True)
-            # Note: If we raise here, message goes back to queue
-            # For now, we'll log and continue
+            processed_results.append({
+                'ticket_id': 'unknown',
+                'status': 'failed',
+                'error': str(e)
+            })
+    
+    # Return summary
+    success_count = sum(1 for r in processed_results if r['status'] == 'success')
     
     return {
-        'statusCode': 200,
+        'statusCode': 200 if success_count > 0 else 500,
         'body': json.dumps({
-            'processed': processed_count,
-            'total': len(records)
+            'processed': success_count,
+            'failed': len(processed_results) - success_count,
+            'results': processed_results
         })
     }
