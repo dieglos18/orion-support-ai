@@ -4,8 +4,8 @@ Response Agent: Generates customer-facing draft replies.
 import json
 import logging
 from typing import Dict, Any
-from src.utils.bedrock_client import BedrockClient
-from src.agents.prompts import RESPONSE_AGENT_PROMPT
+from utils.bedrock_client import BedrockClient
+from agents.prompts import RESPONSE_AGENT_PROMPT
 
 logger = logging.getLogger(__name__)
 

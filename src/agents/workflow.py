@@ -10,11 +10,11 @@ Graph structure:
 import logging
 from typing import Any, Dict, Literal, TypedDict
 from langgraph.graph import StateGraph, END
-from src.schemas.ticket import SupportTicket, AIAnalysis
-from src.utils.bedrock_client import BedrockClient
-from src.agents.triage_agent import TriageAgent
-from src.agents.response_agent import ResponseAgent
-from src.agents.validation_agent import ValidationAgent
+from schemas.ticket import SupportTicket, AIAnalysis
+from utils.bedrock_client import BedrockClient
+from agents.triage_agent import TriageAgent
+from agents.response_agent import ResponseAgent
+from agents.validation_agent import ValidationAgent
 
 logger = logging.getLogger(__name__)
 

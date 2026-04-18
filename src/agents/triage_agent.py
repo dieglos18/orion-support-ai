@@ -4,9 +4,9 @@ Triage Agent: Classifies tickets into categories and urgency levels.
 import json
 import logging
 from typing import Dict, Any
-from src.utils.bedrock_client import BedrockClient
-from src.agents.prompts import TRIAGE_AGENT_PROMPT
-from src.schemas.ticket import SupportTicket
+from utils.bedrock_client import BedrockClient
+from agents.prompts import TRIAGE_AGENT_PROMPT
+from schemas.ticket import SupportTicket
 
 logger = logging.getLogger(__name__)
 

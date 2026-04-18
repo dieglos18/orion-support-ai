@@ -4,8 +4,8 @@ Validation Agent: Quality control for AI-generated responses.
 import json
 import logging
 from typing import Dict, Any
-from src.utils.bedrock_client import BedrockClient
-from src.agents.prompts import VALIDATION_AGENT_PROMPT
+from utils.bedrock_client import BedrockClient
+from agents.prompts import VALIDATION_AGENT_PROMPT
 
 logger = logging.getLogger(__name__)
 

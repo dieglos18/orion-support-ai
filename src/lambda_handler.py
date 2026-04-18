@@ -6,12 +6,43 @@ import json
 import logging
 import os
 from typing import Dict, Any
-from src.agents.workflow import process_ticket
+from agents.workflow import process_ticket
+from utils.eventbridge_client import EventBridgeClient
 
 # Configure logging
 log_level = os.getenv('LOG_LEVEL', 'INFO')
 logger = logging.getLogger()
 logger.setLevel(log_level)
+
+# Initialize EventBridge client
+eventbridge = EventBridgeClient()
+
+
+def emit_critical_alert_if_needed(ticket_data: Dict[str, Any], analysis: Dict[str, Any]):
+    """
+    Emit EventBridge event if ticket is critical (urgency >= 4).
+    
+    Args:
+        ticket_data: Original ticket data
+        analysis: AI analysis result
+    """
+    urgency = analysis.get('urgency', 0)
+    
+    if urgency >= 4:
+        logger.info(f"Emitting critical alert for urgency {urgency}")
+        
+        success = eventbridge.emit_critical_ticket_alert(
+            ticket_id=ticket_data.get('ticket_id', 'unknown'),
+            category=analysis.get('category', 'Unknown'),
+            urgency=urgency,
+            customer_email=ticket_data.get('customer_email', ''),
+            analysis_summary=analysis.get('reasoning', 'No summary available')
+        )
+        
+        if success:
+            logger.info("Critical alert sent to EventBridge → SNS")
+        else:
+            logger.error("Failed to send critical alert")
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -21,7 +52,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Flow:
     1. Parse SQS message
     2. Run ticket through LangGraph workflow
-    3. Emit EventBridge event if critical
+    3. Emit EventBridge event if urgency >= 4
     4. Return result
     
     Args:
@@ -72,15 +103,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 f"{analysis.get('category')} (urgency {analysis.get('urgency')})"
             )
             
-            # TODO: Phase 4 - Emit EventBridge event if critical
-            # if analysis.get('urgency', 0) >= 4:
-            #     emit_critical_alert(analysis)
+            # Emit critical alert if needed
+            emit_critical_alert_if_needed(message_body, analysis)
             
             processed_results.append({
                 'ticket_id': message_body.get('ticket_id'),
                 'status': 'success',
                 'analysis': analysis,
-                'cost': result.get('total_cost', 0)
+                'cost': result.get('total_cost', 0),
+                'critical_alert_sent': analysis.get('urgency', 0) >= 4
             })
             
         except Exception as e:
@@ -100,5 +131,5 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'processed': success_count,
             'failed': len(processed_results) - success_count,
             'results': processed_results
-        })
+        }, indent=2)
     }
