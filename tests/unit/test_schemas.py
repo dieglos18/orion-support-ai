@@ -4,7 +4,7 @@ Ensures data contracts are enforced.
 """
 import pytest
 from pydantic import ValidationError
-from src.schemas.ticket import SupportTicket, AIAnalysis
+from schemas.ticket import SupportTicket, AIAnalysis
 
 
 def test_support_ticket_valid():

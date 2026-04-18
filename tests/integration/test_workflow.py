@@ -3,7 +3,7 @@ Integration tests for the LangGraph workflow.
 Requires AWS credentials and Bedrock access.
 """
 import pytest
-from src.agents.workflow import process_ticket
+from agents.workflow import process_ticket
 
 
 @pytest.fixture

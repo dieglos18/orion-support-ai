@@ -1,6 +1,6 @@
-"""Unit tests for Bedrock Nova/Claude client helpers."""
+"""Unit tests for Bedrock client helpers (Nova messages-v1 parsing and Claude/Nova model-id family inference)."""
 
-from src.utils import bedrock_client as bc
+from utils import bedrock_client as bc
 
 
 def test_extract_nova_text_concat_blocks():
