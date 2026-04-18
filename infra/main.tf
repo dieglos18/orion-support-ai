@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 1.7.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = var.tags
   }
@@ -24,9 +24,9 @@ provider "aws" {
 resource "aws_sqs_queue" "ticket_queue" {
   name                       = "${var.project_name}-${var.environment}-tickets"
   visibility_timeout_seconds = var.sqs_visibility_timeout
-  message_retention_seconds  = 1209600  # 14 days
-  receive_wait_time_seconds  = 20       # Long polling
-  
+  message_retention_seconds  = 1209600 # 14 days
+  receive_wait_time_seconds  = 20      # Long polling
+
   # Dead Letter Queue configuration
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.ticket_dlq.arn
@@ -44,7 +44,7 @@ resource "aws_sqs_queue" "ticket_dlq" {
 # ========================================
 resource "aws_iam_role" "lambda_role" {
   name = "${var.project_name}-${var.environment}-lambda-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 resource "aws_iam_role_policy" "lambda_sqs" {
   name = "sqs-access"
   role = aws_iam_role.lambda_role.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -86,7 +86,7 @@ resource "aws_iam_role_policy" "lambda_sqs" {
 resource "aws_iam_role_policy" "lambda_bedrock" {
   name = "bedrock-access"
   role = aws_iam_role.lambda_role.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -103,7 +103,7 @@ resource "aws_iam_role_policy" "lambda_bedrock" {
 resource "aws_iam_role_policy" "lambda_eventbridge" {
   name = "eventbridge-access"
   role = aws_iam_role.lambda_role.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -180,7 +180,7 @@ resource "aws_lambda_event_source_mapping" "sqs_trigger" {
 resource "aws_cloudwatch_event_rule" "critical_tickets" {
   name        = "${var.project_name}-${var.environment}-critical-tickets"
   description = "Triggers on critical urgency tickets (level 4-5)"
-  
+
   event_pattern = jsonencode({
     source      = ["custom.support"]
     detail-type = ["Critical Ticket Alert"]
@@ -203,7 +203,7 @@ resource "aws_cloudwatch_event_target" "sns" {
 
 resource "aws_sns_topic_policy" "eventbridge_publish" {
   arn = aws_sns_topic.critical_alerts.arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{

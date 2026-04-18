@@ -31,7 +31,7 @@ variable "lambda_memory" {
 variable "sqs_visibility_timeout" {
   description = "SQS message visibility timeout in seconds"
   type        = number
-  default     = 70  # Must be > lambda_timeout
+  default     = 70 # Must be > lambda_timeout
 }
 
 variable "bedrock_model_id" {
@@ -44,8 +44,8 @@ variable "tags" {
   description = "Common tags for all resources"
   type        = map(string)
   default = {
-    Project     = "Orion AI Support Orchestrator"
-    ManagedBy   = "Terraform"
-    CostCenter  = "Engineering"
+    Project    = "Orion AI Support Orchestrator"
+    ManagedBy  = "Terraform"
+    CostCenter = "Engineering"
   }
 }
