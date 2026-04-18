@@ -60,9 +60,9 @@ class BedrockClient:
         region: Optional[str] = None,
         max_retries: int = 3,
     ):
-        self.model_id = model_id or os.getenv(
-            "BEDROCK_MODEL_ID", DEFAULT_MODEL_NOVA_MICRO
-        )
+        env_id = os.getenv("BEDROCK_MODEL_ID", DEFAULT_MODEL_NOVA_MICRO)
+        resolved = (model_id if model_id is not None else env_id) or DEFAULT_MODEL_NOVA_MICRO
+        self.model_id: str = resolved
         self._region = region or _resolve_bedrock_region()
         self._api_family = _infer_api_family(self.model_id)
 

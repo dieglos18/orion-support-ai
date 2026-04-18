@@ -8,7 +8,7 @@ Graph structure:
                                             (EventBridge if critical)
 """
 import logging
-from typing import Any, Dict, Literal, TypedDict
+from typing import Any, Dict, Literal, TypedDict, cast
 from langgraph.graph import StateGraph, END
 from schemas.ticket import SupportTicket, AIAnalysis
 from utils.bedrock_client import BedrockClient
@@ -39,12 +39,12 @@ class SupportTicketState(TypedDict, total=False):
     error: str
 
 
-def create_support_workflow() -> StateGraph:
+def create_support_workflow() -> Any:
     """
     Build the LangGraph workflow.
 
     Returns:
-        Compiled StateGraph ready for execution
+        Compiled graph (StateGraph.compile()) with invoke().
     """
     # Initialize Bedrock client (shared across agents)
     bedrock = BedrockClient()
@@ -169,6 +169,6 @@ def process_ticket(ticket_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # Run workflow
     app = create_support_workflow()
-    final_state = app.invoke(initial_state)
+    final_state = cast(Dict[str, Any], app.invoke(initial_state))
 
     return final_state
