@@ -1,0 +1,3 @@
+# Committed placeholder so terraform validate can evaluate source_code_hash
+# when lambda_layer.zip is absent (fresh clone, CI). Build the real zip with
+# scripts/build_lambda_layer.sh before terraform apply.

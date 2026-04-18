@@ -128,7 +128,11 @@ resource "aws_lambda_layer_version" "python_deps" {
   compatible_runtimes = ["python3.12"]
   description         = "LangGraph, Pydantic, transitive deps (see requirements-lambda.txt)"
 
-  source_code_hash = filebase64sha256("${path.module}/lambda_layer.zip")
+  # Real zip may be gitignored; try() falls back to a committed placeholder for validate/plan without the artifact.
+  source_code_hash = try(
+    filebase64sha256("${path.module}/lambda_layer.zip"),
+    filebase64sha256("${path.module}/terraform_validate_layer_placeholder")
+  )
 }
 
 # ========================================
