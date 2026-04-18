@@ -30,6 +30,15 @@ jobs:
       - name: Terraform Init
         working-directory: ./infra
         run: terraform init -backend=false
+
+      # filebase64sha256(lambda_layer.zip) is evaluated during validate; zip is gitignored
+      - name: Stub Lambda layer zip for validate
+        working-directory: ./infra
+        run: |
+          mkdir -p python/lib/python3.12/site-packages
+          touch python/lib/python3.12/site-packages/.keep
+          zip -rq lambda_layer.zip python
+          rm -rf python
       
       - name: Terraform Validate
         working-directory: ./infra
