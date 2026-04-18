@@ -7,7 +7,7 @@ variable "project_name" {
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "environment" {
@@ -35,9 +35,9 @@ variable "sqs_visibility_timeout" {
 }
 
 variable "bedrock_model_id" {
-  description = "Amazon Bedrock model ID"
+  description = "Amazon Bedrock foundation model ID"
   type        = string
-  default     = "anthropic.claude-3-haiku-20240307-v1:0"
+  default     = "amazon.nova-micro-v1:0"
 }
 
 variable "tags" {
