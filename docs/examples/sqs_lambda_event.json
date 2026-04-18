@@ -1,0 +1,18 @@
+{
+  "Records": [
+    {
+      "messageId": "00000000-0000-0000-0000-000000000001",
+      "receiptHandle": "AQEBexample",
+      "body": "{\"ticket_id\":\"DEMO-README-001\",\"customer_email\":\"user@example.com\",\"subject\":\"Billing question\",\"content\":\"I was charged twice for last month. Please review my invoice and confirm the correct amount.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1713465600000"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:000000000000:example-queue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

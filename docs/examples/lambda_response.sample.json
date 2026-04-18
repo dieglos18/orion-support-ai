@@ -1,0 +1,19 @@
+{
+  "processed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "ticket_id": "DEMO-README-001",
+      "status": "success",
+      "analysis": {
+        "category": "Billing",
+        "urgency": 3,
+        "reasoning": "Customer reports a possible duplicate charge. Requires billing review but indicates no production outage.",
+        "suggested_reply": "Thank you for reaching out. I understand your concern about a possible duplicate charge on your latest invoice. I have flagged this for our billing team to verify the charges against your payment method. You should receive a confirmation within one business day. If anything remains unclear, reply to this thread and we will assist further.",
+        "requires_human_review": true
+      },
+      "cost": 0.000087,
+      "critical_alert_sent": false
+    }
+  ]
+}

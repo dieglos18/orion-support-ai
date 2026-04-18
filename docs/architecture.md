@@ -19,13 +19,14 @@
 - **Error Recovery**: Can retry individual nodes without re-running entire flow
 - **Observability**: Each node emits separate traces
 
-#### Amazon Bedrock (Claude 3 Haiku)
-- **Cost**: $0.00025 per 1K input tokens (10x cheaper than GPT-4)
-- **Speed**: ~1-2s response time (vs 5-10s for larger models)
-- **Quality**: Sufficient for triage (95%+ accuracy in tests)
+#### Amazon Bedrock (Nova Micro by default)
+- **Default model**: `amazon.nova-micro-v1:0` via Terraform `bedrock_model_id` / Lambda `BEDROCK_MODEL_ID`. The Bedrock client in `src/utils/bedrock_client.py` also supports Anthropic Claude when the model id implies the Messages API.
+- **Cost**: On-demand list defaults in code are ~$0.000035/1K input and ~$0.00014/1K output for Nova Micro; run `estimate_cost` in the client or check [AWS Bedrock pricing](https://aws.amazon.com/bedrock/pricing/) for current rates.
+- **Speed**: Fast enough for sub–3s multi-agent turns on typical tickets.
+- **Quality**: Sufficient for structured triage + draft + validation; validate against your own evals.
 
 #### SQS over Direct Lambda Invocation
-- **Decnts cascading failures
+- **Decouples** cascading failures
 - **Throttling**: Lambda auto-scales but Bedrock has rate limits
 - **Retry Logic**: DLQ captures failed messages
 
@@ -40,10 +41,12 @@
 |-----------|-----------|--------------------------------------|
 | Lambda (10K invocations @ 512MB, 3s avg) | First 1M free | $0.08 |
 | SQS (10K messages) | First 1M free | $0.004 |
-| Bedrock (5M tokens @ $0.00025/1K) | N/A | $1.25 |
+| Bedrock (5M tokens, Nova Micro, ~70% in / 30% out blend) | N/A | ~$0.33 |
 | EventBridge (1K critical events) | First 1M free | $0 |
 | SNS (1K notifications) | First 1M free | $0 |
-| **Total** | - | **~$1.33/month** |
+| **Total** | - | **~$0.41/month** |
+
+_Bedrock row uses the same illustrative blend as README Cost Analysis; confirm live pricing on AWS._
 
 ## Security
 
