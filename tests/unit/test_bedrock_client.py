@@ -1,4 +1,7 @@
-"""Unit tests for Bedrock client helpers (Nova messages-v1 parsing and Claude/Nova model-id family inference)."""
+"""Unit tests for Bedrock client helpers.
+
+Covers Nova messages-v1 text extraction and Claude/Nova family inference.
+"""
 
 from utils import bedrock_client as bc
 

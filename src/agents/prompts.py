@@ -37,8 +37,8 @@ OUTPUT FORMAT (must be valid JSON only, no markdown fences or prose):
 }
 
 Example reasoning:
-"The user cannot login after password reset. This is a Technical issue 
-because it involves system authentication. Urgency is 4 (High) because 
+"The user cannot login after password reset. This is a Technical issue
+because it involves system authentication. Urgency is 4 (High) because
 the user is completely blocked from accessing their account."
 
 Now analyze this ticket and respond ONLY with the JSON output:"""

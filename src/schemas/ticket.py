@@ -10,7 +10,7 @@ from datetime import datetime
 class SupportTicket(BaseModel):
     """
     Input schema: Raw ticket from customer.
-    
+
     Example:
         {
             "ticket_id": "TKT-2024-001",
@@ -50,12 +50,12 @@ class SupportTicket(BaseModel):
 class AIAnalysis(BaseModel):
     """
     Output schema: AI-generated ticket analysis.
-    
+
     This enforces structured output from the LLM to prevent:
     - Hallucinated categories
     - Invalid urgency levels
     - Missing reasoning
-    
+
     Example:
         {
             "category": "Technical",
