@@ -18,6 +18,11 @@ output "lambda_function_name" {
   value       = aws_lambda_function.orchestrator.function_name
 }
 
+output "lambda_layer_version_arn" {
+  description = "ARN of the Python dependencies Lambda layer"
+  value       = aws_lambda_layer_version.python_deps.arn
+}
+
 output "sns_topic_arn" {
   description = "ARN of the SNS topic for critical alerts"
   value       = aws_sns_topic.critical_alerts.arn

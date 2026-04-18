@@ -15,6 +15,9 @@ env/
 *.tfstate.*
 .terraform.lock.hcl
 terraform.tfvars
+infra/lambda_layer.zip
+infra/lambda_function.zip
+build/layer_staging/
 
 # AWS
 .aws/

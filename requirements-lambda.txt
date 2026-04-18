@@ -1,0 +1,7 @@
+# Runtime dependencies for AWS Lambda (python3.12).
+# Build the layer with scripts/build_lambda_layer.sh (Docker) so wheels match Lambda, not local Python 3.11.
+# boto3/botocore: provided by the Lambda runtime; omit here to keep the layer smaller.
+
+pydantic>=2.7.4,<3.0.0
+email-validator>=2.0.0
+langgraph==0.2.45

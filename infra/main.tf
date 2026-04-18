@@ -117,7 +117,22 @@ resource "aws_iam_role_policy" "lambda_eventbridge" {
 }
 
 # ========================================
-# Lambda Function (Placeholder)
+# Lambda layer (Python 3.12 deps — build before apply)
+# ========================================
+# Run from repo root: ./scripts/build_lambda_layer.sh
+# Produces lambda_layer.zip with python/lib/python3.12/site-packages/...
+
+resource "aws_lambda_layer_version" "python_deps" {
+  filename            = "${path.module}/lambda_layer.zip"
+  layer_name          = "${var.project_name}-${var.environment}-python-deps"
+  compatible_runtimes = ["python3.12"]
+  description         = "LangGraph, Pydantic, transitive deps (see requirements-lambda.txt)"
+
+  source_code_hash = filebase64sha256("${path.module}/lambda_layer.zip")
+}
+
+# ========================================
+# Lambda Function (application code only)
 # ========================================
 
 data "archive_file" "lambda_zip" {
@@ -135,7 +150,9 @@ resource "aws_lambda_function" "orchestrator" {
   runtime          = "python3.12"
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory
-  
+
+  layers = [aws_lambda_layer_version.python_deps.arn]
+
   environment {
     variables = {
       BEDROCK_MODEL_ID = var.bedrock_model_id
